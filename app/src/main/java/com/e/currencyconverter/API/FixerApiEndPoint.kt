@@ -1,8 +1,6 @@
 package com.e.currencyconverter.API
 
 import com.e.currencyconverter.Constants.Companion.API_KEY
-import com.e.currencyconverter.Constants.Companion.BASE_URL
-import com.google.gson.JsonObject
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.GET
@@ -12,11 +10,11 @@ interface FixerApiEndPoint {
 
     @GET("convert")
     suspend fun convertCurrency(
-        @Query("access_key") apiKey: String = API_KEY ,
+        @Query("access_key") apiKey: String = API_KEY,
         @Query("from") fromCurrency: String = "USD",
         @Query("to") toCurrency: String = "GBP",
         @Query("amount") amount:String = "1"
-    ): Response<GeneralResponse>
+    ): Response<ConvertionResponse>
 
 
 

@@ -3,12 +3,11 @@ package com.e.currencyconverter
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.e.currencyconverter.API.ConvertionResponse
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_home.*
 
@@ -35,9 +34,35 @@ class FirstFragment : Fragment(R.layout.fragment_home), AdapterView.OnItemSelect
         setUpCurrencySpinners()
 
         view.findViewById<Button>(R.id.button_convert).setOnClickListener {
+            Log.d("fromCurrency", textView_from_currency.text.toString())
+            mainViewModel.getConvertedValue(textView_from_currency.text.toString(),
+                textView_to_currency.text.toString(),
+                text_from_value.text.toString()?:"0"
+            )
+            setConvertedValue()
+
 
         }
     }
+
+    private fun setConvertedValue() {
+        mainViewModel.convertedCurrencyValue.observe(viewLifecycleOwner, Observer {
+                convertedValue->
+            when(convertedValue) {
+                is Resource.Success -> {
+                    convertedValue.data?.let{resp ->
+                        textView_converted_value.text = "=" + resp.result
+                    }
+                }
+                is Resource.Error -> {
+                Toast.makeText(requireContext(),convertedValue.message, Toast.LENGTH_SHORT).show()
+                }
+
+            }
+        })
+
+    }
+
 
     private fun setUpCurrencySpinners() {
 

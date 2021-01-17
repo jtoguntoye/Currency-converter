@@ -1,12 +1,7 @@
 package com.e.currencyconverter
 
-import android.content.Context
-import android.provider.Settings.Global.getString
 import com.e.currencyconverter.API.FixerApiEndPoint
-import com.e.currencyconverter.API.GeneralResponse
-import com.e.currencyconverter.Constants.Companion.API_KEY
-import com.google.gson.JsonObject
-import dagger.hilt.android.qualifiers.ApplicationContext
+import com.e.currencyconverter.API.ConvertionResponse
 import okhttp3.ResponseBody
 import retrofit2.Response
 import javax.inject.Inject
@@ -21,8 +16,8 @@ constructor(
                                   fromCurrency:String,
                                   toCurrency: String,
                                   amount: String
-    ): Response<GeneralResponse>{
-    return fixerApiEndPoint.convertCurrency(fromCurrency, toCurrency, amount)
+    ): Response<ConvertionResponse>{
+    return fixerApiEndPoint.convertCurrency(fromCurrency = fromCurrency, toCurrency = toCurrency, amount =  amount)
     }
 
     suspend fun getSupportedCurrencySymbols(): Response<ResponseBody> {

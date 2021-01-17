@@ -3,7 +3,7 @@ package com.e.currencyconverter
 import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
-import com.e.currencyconverter.API.GeneralResponse
+import com.e.currencyconverter.API.ConvertionResponse
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import org.json.JSONObject
@@ -20,12 +20,13 @@ constructor(
         getAllSupportedCurrencySymbols()
     }
     val supportedCurrencyList: MutableLiveData<Resource<MutableList<String>>> = MutableLiveData()
-    val convertedCurrencyValue: MutableLiveData<Resource<GeneralResponse>> =  MutableLiveData()
+    val convertedCurrencyValue: MutableLiveData<Resource<ConvertionResponse>> =  MutableLiveData()
 
 
     fun getConvertedValue(fromCurrency: String, toCurrency: String, value:String){
         viewModelScope.launch {
             val resp = repository.getConvertedValue(fromCurrency, toCurrency, value)
+            Log.d("result", resp.toString())
             convertedCurrencyValue.postValue(handleConversionResponse(response = resp))
 
         }
@@ -41,26 +42,14 @@ constructor(
     }
 
 
-    fun handleConversionResponse(response: Response<GeneralResponse>): Resource<GeneralResponse> {
+    fun handleConversionResponse(response: Response<ConvertionResponse>): Resource<ConvertionResponse> {
         if(response.isSuccessful) {
             response.body()?.let { response->
-                when (response) {
-                    is GeneralResponse.ConvertedValueResponse -> {
-                        return Resource.Success(response)
-                    }
-
-
-                    is GeneralResponse.ErrorResponse -> {
-                    Log.e("TAG", "Error is ${response.error.info}")
-                        return Resource.Error(response.error.info)
-                    }
-                }
-
-            }
+                if(response.success == true)
+                return Resource.Success(response)
+                 }
         }
-        return Resource.Error("Request failed!")
-
-
+        return Resource.Error("Conversion Failed")
     }
 
     fun handleSupportedSymbolsResponse(response: Response<ResponseBody>): Resource<MutableList<String>>{
@@ -80,7 +69,6 @@ constructor(
 
                 }
             }
-            //Log.d("currencySym", currencyList.toString())
             return Resource.Success(currencyList)
         }
         else
